@@ -47,13 +47,13 @@ def retrieval_chain_without_lcel(query: str):
     #Step 1: Retieve relevant documents
     docs = retriever.invoke(query)
 
-    docs = format_docs(docs)
+    context = format_docs(docs)
 
-    messages = prompt_template.format_messages(context=context, question:query)
+    messages = prompt_template.format_messages(context=context, question=query)
 
     response = llm.invoke(messages)
 
-    return response.context
+    return response.content
 
 if __name__ == '__main__':
     print("Retrieving...")
