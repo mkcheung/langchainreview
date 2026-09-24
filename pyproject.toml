@@ -18,4 +18,5 @@ dependencies = [
     "tavily-python>=0.8.2",
     "langchain-unstructured>=1.0.1",
     "unstructured>=0.27.6",
+    "streamlit>=1.64.0",
 ]
