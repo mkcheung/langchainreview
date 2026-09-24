@@ -1,7 +1,14 @@
 from langchain_community.document_loaders import TextLoader, PyPDFLoader, WebBaseLoader, ArxivLoader, WikipediaLoader
+from langchain_community.vectorstores import Chroma
 from langchain_classic.text_splitter import RecursiveCharacterTextSplitter, CharacterTextSplitter, HTMLHeaderTextSplitter
 import bs4
 import wikipedia
+from langchain_openai import OpenAIEmbeddings
+from langchain_pinecone import PineconeVectorStore
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 wikipedia.set_user_agent("langchaincourse-exercise/1.0 (mars.kwong.cheung@gmail.com)")
 
@@ -67,17 +74,17 @@ wikipedia.set_user_agent("langchaincourse-exercise/1.0 (mars.kwong.cheung@gmail.
 
 # Demonstrate use of HTML Header Splitter
 # data from url
-url = 'https://plato.stanford.edu/entries/goedel/'
+# url = 'https://plato.stanford.edu/entries/goedel/'
 
-headers_to_split_on=[
-    ("h1","Header 1"),
-    ("h2","Header 2"),
-    ("h3","Header 3"),
-    ("h4","Header 4")
-]
-html_splitter=HTMLHeaderTextSplitter(headers_to_split_on)
-html_header_splits=html_splitter.split_text_from_url(url)
-print(html_header_splits)
+# headers_to_split_on=[
+#     ("h1","Header 1"),
+#     ("h2","Header 2"),
+#     ("h3","Header 3"),
+#     ("h4","Header 4")
+# ]
+# html_splitter=HTMLHeaderTextSplitter(headers_to_split_on)
+# html_header_splits=html_splitter.split_text_from_url(url)
+# print(html_header_splits)
 
 # PyPDF Loader
 # loader = PyPDFLoader('attention.pdf')
@@ -111,3 +118,21 @@ print(html_header_splits)
 #     print(f"Source URL: {doc.metadata['source']}")
 #     print(f"Title: {doc.metadata['title']}")
 #     print(f"Content Preview: {doc.page_content[:200]}...\n")
+
+# Demonstrate use of recusrive character splitter
+
+loader=TextLoader('speech.txt')
+docs=loader.load()
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+final_documents = text_splitter.split_documents(docs)
+# print(final_documents)
+embeddings_1024 = OpenAIEmbeddings(model="text-embedding-3-large", dimensions=1024)
+# query_result = embeddings_1024.embed_query(text)
+# print(query_result)
+db=Chroma.from_documents(final_documents, embeddings_1024)
+
+query="It will be all the easier for us to conduct ourselves as belligerents in a high spirit of right and fairness because we act without animus, not in enmity toward a people or with the desire to bring any injury or disadvantage"
+retrieved_results = db.similarity_search(query)
+print(retrieved_results)
+# vectorstore = PineconeVectorStore(index_name="langchain-doc-index", embedding=embeddings)
