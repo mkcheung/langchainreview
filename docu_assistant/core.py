@@ -5,7 +5,7 @@ from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain.messages import ToolMessage
 from langchain.tools import tool
-from langchain.pinecone import PineconeVectorStore
+from langchain_pinecone import PineconeVectorStore
 from langchain_openai import OpenAIEmbeddings
 
 load_dotenv()
@@ -19,7 +19,7 @@ model = init_chat_model("gpt-5.2", model_provider="openai")
 @tool(response_format="content_and_artifact")
 def retrieve_content(query: str):
     """Retrieve relevant documentation to help answer user queries about LangChain"""
-    retrieved_docs = vectorstore.as_retriever().invoke(query, 4)
+    retrieved_docs = vectorstore.as_retriever(search_kwargs={"k": 4}).invoke(query)
 
     serialized = "\n\n".join(
         (f"Source: {doc.metadata.get('source', 'Unknown')}\n\nContent: {doc.page_content}")
