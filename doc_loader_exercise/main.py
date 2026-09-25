@@ -1,5 +1,7 @@
 from langchain_community.document_loaders import TextLoader, PyPDFLoader, WebBaseLoader, ArxivLoader, WikipediaLoader
 from langchain_community.vectorstores import Chroma
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 from langchain_classic.text_splitter import RecursiveCharacterTextSplitter, CharacterTextSplitter, HTMLHeaderTextSplitter
 import bs4
 import wikipedia
@@ -119,16 +121,34 @@ wikipedia.set_user_agent("langchaincourse-exercise/1.0 (mars.kwong.cheung@gmail.
 #     print(f"Title: {doc.metadata['title']}")
 #     print(f"Content Preview: {doc.page_content[:200]}...\n")
 
+################################################################################################################################################################
 # Demonstrate use of recursive character splitter and the embedding
 # into Chroma. Showcase query retrival of documents
-loader=TextLoader('speech.txt')
-docs=loader.load()
+# loader=TextLoader('speech.txt')
+# docs=loader.load()
 
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-final_documents = text_splitter.split_documents(docs)
-embeddings_1024 = OpenAIEmbeddings(model="text-embedding-3-large", dimensions=1024)
-db=Chroma.from_documents(final_documents, embeddings_1024)
+# text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+# final_documents = text_splitter.split_documents(docs)
+# embeddings_1024 = OpenAIEmbeddings(model="text-embedding-3-large", dimensions=1024)
+# db=Chroma.from_documents(final_documents, embeddings_1024)
 
-query="It will be all the easier for us to conduct ourselves as belligerents in a high spirit of right and fairness because we act without animus, not in enmity toward a people or with the desire to bring any injury or disadvantage"
-retrieved_results = db.similarity_search(query)
-print(retrieved_results)
+# query="It will be all the easier for us to conduct ourselves as belligerents in a high spirit of right and fairness because we act without animus, not in enmity toward a people or with the desire to bring any injury or disadvantage"
+# retrieved_results = db.similarity_search(query)
+# print(retrieved_results)
+################################################################################################################################################################
+
+################################################################################################################################################################
+# Demonstrate basic LCEL chaining. Output results with StrOutputParser
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ('system', "You are an expert AI Engineer. Provide me answers based on the question"),
+        ('user', "{input}")
+    ]
+)
+from langchain_openai import ChatOpenAI
+llm=ChatOpenAI(model="gpt-4o")
+output_parser=StrOutputParser()
+chain=prompt|llm|output_parser
+response = chain.invoke({"input":"Can you tell me about Langsmith?"})
+print(response)
+################################################################################################################################################################
