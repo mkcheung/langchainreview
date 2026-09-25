@@ -119,20 +119,16 @@ wikipedia.set_user_agent("langchaincourse-exercise/1.0 (mars.kwong.cheung@gmail.
 #     print(f"Title: {doc.metadata['title']}")
 #     print(f"Content Preview: {doc.page_content[:200]}...\n")
 
-# Demonstrate use of recusrive character splitter
-
+# Demonstrate use of recursive character splitter and the embedding
+# into Chroma. Showcase query retrival of documents
 loader=TextLoader('speech.txt')
 docs=loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 final_documents = text_splitter.split_documents(docs)
-# print(final_documents)
 embeddings_1024 = OpenAIEmbeddings(model="text-embedding-3-large", dimensions=1024)
-# query_result = embeddings_1024.embed_query(text)
-# print(query_result)
 db=Chroma.from_documents(final_documents, embeddings_1024)
 
 query="It will be all the easier for us to conduct ourselves as belligerents in a high spirit of right and fairness because we act without animus, not in enmity toward a people or with the desire to bring any injury or disadvantage"
 retrieved_results = db.similarity_search(query)
 print(retrieved_results)
-# vectorstore = PineconeVectorStore(index_name="langchain-doc-index", embedding=embeddings)
