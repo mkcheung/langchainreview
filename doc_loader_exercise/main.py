@@ -1,5 +1,6 @@
 from langchain_community.document_loaders import TextLoader, PyPDFLoader, WebBaseLoader, ArxivLoader, WikipediaLoader
 from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_classic.text_splitter import RecursiveCharacterTextSplitter, CharacterTextSplitter, HTMLHeaderTextSplitter
@@ -139,16 +140,26 @@ wikipedia.set_user_agent("langchaincourse-exercise/1.0 (mars.kwong.cheung@gmail.
 
 ################################################################################################################################################################
 # Demonstrate basic LCEL chaining. Output results with StrOutputParser
-prompt = ChatPromptTemplate.from_messages(
-    [
-        ('system', "You are an expert AI Engineer. Provide me answers based on the question"),
-        ('user', "{input}")
-    ]
-)
-from langchain_openai import ChatOpenAI
-llm=ChatOpenAI(model="gpt-4o")
-output_parser=StrOutputParser()
-chain=prompt|llm|output_parser
-response = chain.invoke({"input":"Can you tell me about Langsmith?"})
-print(response)
+# prompt = ChatPromptTemplate.from_messages(
+#     [
+#         ('system', "You are an expert AI Engineer. Provide me answers based on the question"),
+#         ('user', "{input}")
+#     ]
+# )
+# from langchain_openai import ChatOpenAI
+# llm=ChatOpenAI(model="gpt-4o")
+# output_parser=StrOutputParser()
+# chain=prompt|llm|output_parser
+# response = chain.invoke({"input":"Can you tell me about Langsmith?"})
+# print(response)
 ################################################################################################################################################################
+#Simple Gen AI App using LangChaing
+
+loader=WebBaseLoader("https://docs.smith.langchain.com/tutorials/Administrators/manage_spend")
+docs = loader.load()
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+documents = text_splitter.split_documents(docs)
+embeddings = OpenAIEmbeddings()
+vectorstoredb=FAISS.from_documents(documents, embeddings)
+print(vectorstoredb)
