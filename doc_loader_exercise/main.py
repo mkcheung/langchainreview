@@ -5,8 +5,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_classic.text_splitter import RecursiveCharacterTextSplitter, CharacterTextSplitter, HTMLHeaderTextSplitter
 from langchain_core.documents import Document
+from langchain_core.messages import HumanMessage,SystemMessage
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_classic.chains import create_retrieval_chain
+from langchain_groq import ChatGroq
 import bs4
 import wikipedia
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
@@ -158,43 +160,64 @@ wikipedia.set_user_agent("langchaincourse-exercise/1.0 (mars.kwong.cheung@gmail.
 ################################################################################################################################################################
 #Simple Gen AI App using LangChaing
 
-loader=WebBaseLoader("https://docs.langchain.com/langsmith/dashboards")
-docs = loader.load()
+# loader=WebBaseLoader("https://docs.langchain.com/langsmith/dashboards")
+# docs = loader.load()
 
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-documents = text_splitter.split_documents(docs)
-embeddings = OpenAIEmbeddings()
-vectorstoredb=FAISS.from_documents(documents, embeddings)
-# print(vectorstoredb)
+# text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+# documents = text_splitter.split_documents(docs)
+# embeddings = OpenAIEmbeddings()
+# vectorstoredb=FAISS.from_documents(documents, embeddings)
+# # print(vectorstoredb)
 
-# Query from a vectorstore
-query = "The global group by setting appears on the top right-hand side of the dashboard"
-result = vectorstoredb.similarity_search(query)
-# print(result[0].page_content)
+# # Query from a vectorstore
+# query = "The global group by setting appears on the top right-hand side of the dashboard"
+# result = vectorstoredb.similarity_search(query)
+# # print(result[0].page_content)
 
-#Demonstrate a retrieval chain, document chain
-prompt = ChatPromptTemplate.from_template(
-    """
-    Answer the following question based only on the provided context:
-    <context>
-        {context}
-    </context>
-    """
+# #Demonstrate a retrieval chain, document chain
+# prompt = ChatPromptTemplate.from_template(
+#     """
+#     Answer the following question based only on the provided context:
+#     <context>
+#         {context}
+#     </context>
+#     """
+# )
+
+# llm=ChatOpenAI(model="gpt-4o")
+
+# document_chain=create_stuff_documents_chain(llm, prompt)
+
+# document_chain.invoke({
+#     "input":"The global group by setting appears on the top right-hand side of the dashboard",
+#     "context": [Document(page_content="The global group by setting appears on the top right-hand side of the dashboard")]
+# })
+
+# retriever = vectorstoredb.as_retriever()
+# retrieval_chain = create_retrieval_chain(retriever, document_chain)
+
+
+# response = retrieval_chain.invoke({"input":"The global group by setting appears on the top right-hand side of the dashboard"})
+
+# print(response['answer'])
+################################################################################################################################################################
+
+model = ChatGroq(model='openai/gpt-oss-20b', groq_api_key=os.getenv("GRQQ_API_KEY_2"))
+
+# messages = [
+#     SystemMessage(content="Translate the following from English to French"),
+#     HumanMessage(content="Hello How are you?")
+# ]
+
+parser=StrOutputParser()
+generic_template = "Translate the following into {language}:"
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ('system', generic_template),
+        ('user', "{text}")
+    ]
 )
 
-llm=ChatOpenAI(model="gpt-4o")
-
-document_chain=create_stuff_documents_chain(llm, prompt)
-
-document_chain.invoke({
-    "input":"The global group by setting appears on the top right-hand side of the dashboard",
-    "context": [Document(page_content="The global group by setting appears on the top right-hand side of the dashboard")]
-})
-
-retriever = vectorstoredb.as_retriever()
-retrieval_chain = create_retrieval_chain(retriever, document_chain)
-
-
-response = retrieval_chain.invoke({"input":"The global group by setting appears on the top right-hand side of the dashboard"})
-
-print(response['answer'])
+chain = prompt | model | parser
+result = chain.invoke({"language": "French", "text": "Hello"})
+print(result)
