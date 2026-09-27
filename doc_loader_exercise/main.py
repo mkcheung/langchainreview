@@ -9,10 +9,12 @@ from langchain_core.messages import HumanMessage,SystemMessage
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_classic.chains import create_retrieval_chain
 from langchain_groq import ChatGroq
-import bs4
-import wikipedia
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_pinecone import PineconeVectorStore
+from langserve import add_routes
+import bs4
+from fastapi import FastAPI
+import wikipedia
 import os
 from dotenv import load_dotenv
 
@@ -219,5 +221,17 @@ prompt = ChatPromptTemplate.from_messages(
 )
 
 chain = prompt | model | parser
-result = chain.invoke({"language": "French", "text": "Hello"})
-print(result)
+# result = chain.invoke({"language": "French", "text": "Hello"})
+# print(result)
+
+app=FastAPI(title="Langchain Server", version="1.0", description="A simple API server using Langchain runnable interfaces")
+
+add_routes (
+    app,
+    chain,
+    path="/chain"
+)
+
+if __name__=="__main__":
+    import uvicorn
+    uvicorn.run(app, host="localhost", port=8000)
