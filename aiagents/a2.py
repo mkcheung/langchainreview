@@ -32,5 +32,7 @@ from langchain.tools import tool
 # response = model.invoke("Why do parrots talk?")
 # print(response.content)
 model = ChatGroq(model="openai/gpt-oss-120b")
-response = model.invoke("Why do parrots talk?")
-print(response.content)
+# response = model.invoke("Why do parrots talk?")
+response = model.stream("Why do parrots talk?")
+for chunk in model.stream("Why do parrots have colorful feathers?"):
+    print(chunk.text, end="|", flush=True)
