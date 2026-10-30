@@ -1,4 +1,5 @@
 import os
+import random
 from dotenv import load_dotenv
 load_dotenv()
 from IPython.display import Image, display
