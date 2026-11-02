@@ -22,4 +22,6 @@ dependencies = [
     "langgraph>=1.2.11",
     "langgraph-cli[inmem]>=0.4.40",
     "ipykernel>=7.4.0",
+    "arxiv>=4.0.2",
+    "wikipedia>=1.4.0",
 ]

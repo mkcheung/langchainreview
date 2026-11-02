@@ -231,6 +231,19 @@ wheels = [
 ]
 
 [[package]]
+name = "arxiv"
+version = "4.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "lxml" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/03/b7/b574b73f269b0310f9ff134155ad22ec78aa41da64e6ff4a9ad0d1377949/arxiv-4.0.2.tar.gz", hash = "sha256:08c152504c797fa70ad6a407374f865c3fa1f77c8f59d725da47916bac06236a", size = 198981, upload-time = "2026-10-26T14:08:23.049Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/94/f8/f87ff1a298c64f43335dae1523d8890b63d369f957c0edb8fb570c9da267/arxiv-4.0.2-py3-none-any.whl", hash = "sha256:c6f2af32dd3a776815e26da559f164872ec029fd891d917fecd6a196b34149fc", size = 13014, upload-time = "2026-10-26T14:08:22.072Z" },
+]
+
+[[package]]
 name = "asttokens"
 version = "3.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1852,6 +1865,7 @@ name = "langchaincourse"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "arxiv" },
     { name = "black" },
     { name = "ipykernel" },
     { name = "isort" },
@@ -1869,10 +1883,12 @@ dependencies = [
     { name = "streamlit" },
     { name = "tavily-python" },
     { name = "unstructured" },
+    { name = "wikipedia" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "arxiv", specifier = ">=4.0.2" },
     { name = "black", specifier = ">=26.5.1" },
     { name = "ipykernel", specifier = ">=7.4.0" },
     { name = "isort", specifier = ">=9.0.1" },
@@ -1890,6 +1906,7 @@ requires-dist = [
     { name = "streamlit", specifier = ">=1.64.0" },
     { name = "tavily-python", specifier = ">=0.8.2" },
     { name = "unstructured", specifier = ">=0.27.6" },
+    { name = "wikipedia", specifier = ">=1.4.0" },
 ]
 
 [[package]]
@@ -5594,6 +5611,16 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/2d/3f/73e511ecf2496ceac57dd4ed8388efe2bcf0769338a2dbf242c8366ae87e/websockets-16.1.1-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:56cd5fc4f10a9ea8aa0804bddb7b42506cf9e136046f3b4c27de8fec9e2ecba5", size = 180330, upload-time = "2026-07-17T22:51:02.603Z" },
     { url = "https://files.pythonhosted.org/packages/be/4d/2d0d67834092e354d2b0498f014a41249a89556bc406cf86f3e1557bb463/websockets-16.1.1-py3-none-any.whl", hash = "sha256:6abbd3e82c731c8e531714466acd5d87b5e88ac3243465337ba71d68e23ae7e3", size = 173814, upload-time = "2026-07-17T22:51:04.184Z" },
 ]
+
+[[package]]
+name = "wikipedia"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/67/35/25e68fbc99e672127cc6fbb14b8ec1ba3dfef035bf1e4c90f78f24a80b7d/wikipedia-1.4.0.tar.gz", hash = "sha256:db0fad1829fdd441b1852306e9856398204dc0786d2996dd2e0c8bb8e26133b2", size = 27748, upload-time = "2014-11-15T15:59:49.808Z" }
 
 [[package]]
 name = "wrapt"
