@@ -101,6 +101,13 @@ graph = builder.compile(checkpointer=memory)
 display(Image(graph.get_graph().draw_mermaid_png()))
 
 config={"configurable":{"thread_id":"1"}}
+
+for chunk in graph.stream({'messages':'Hi, my name Mars and I like cricket'}, config, stream_mode='updates'):
+    print(chunk)
+
+for chunk in graph.stream({'messages':'I also like football'}, config, stream_mode='updates'):
+    print(chunk)
+
 messages = [HumanMessage(content="Add 12 and 13.")]
 
 messages = graph.invoke({"messages":messages}, config=config)
