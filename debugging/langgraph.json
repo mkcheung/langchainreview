@@ -1,0 +1,22 @@
+{
+    "dependencies": [
+        "."
+    ],
+    "graphs": {
+        "openai_agent": "./openai_agent.py:agent"
+    },
+    "env": "../.env",
+    "http": {
+        "app": "./studio_server.py:app",
+        "cors": {
+            "allow_origins": ["https://smith.langchain.com"],
+            "allow_methods": ["*"],
+            "allow_headers": ["*"],
+            "expose_headers": [
+                "x-pagination-total",
+                "x-pagination-next",
+                "content-location"
+            ]
+        }
+    }
+}
