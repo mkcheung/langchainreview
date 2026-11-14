@@ -1,21 +1,17 @@
-import os
 import operator
-import random
-from dotenv import load_dotenv
-load_dotenv()
-from langgraph.checkpoint.memory import MemorySaver
-from langchain_openai import ChatOpenAI
-from typing_extensions import Literal,TypedDict
-from pydantic import BaseModel,Field
-from langchain_core.messages import BaseMessage, AnyMessage, SystemMessage, HumanMessage, AIMessage,ToolMessage
-from langgraph.graph.message import add_messages # reducer
-from langgraph.types import Send
 from typing import Annotated
-from langgraph.graph import StateGraph, START, END
-from langgraph.prebuilt import ToolNode, tools_condition
-from langchain_core.tools import tool
+
+from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_openai import ChatOpenAI
+from langgraph.graph import END, START, StateGraph
+from langgraph.types import Send
+from pydantic import BaseModel, Field
 from rich.console import Console
 from rich.markdown import Markdown
+from typing_extensions import TypedDict
+
+load_dotenv()
 
 console = Console()
 
