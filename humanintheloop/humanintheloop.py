@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import END, START, StateGraph, MessagesState,
-from langgraph.prebuild import tools_condition, ToolNode
+from langgraph.graph import END, START, StateGraph, MessagesState
+from langgraph.prebuilt import tools_condition, ToolNode
 from langgraph.types import Send
 from pydantic import BaseModel, Field
 from rich.console import Console
@@ -53,13 +53,13 @@ def divide(a:int, b:int) -> float:
     """
     return a / b
 
-tools = [add,multiple,divide]
+tools = [add,multiply,divide]
 
 llm_with_tools = llm.bind_tools(tools)
 
 sys_msg = SystemMessage(content="You are a helpful assistant tasked with performing arithmetic on a set of inputs.")
 
-def assistant(state:MessageState):
+def assistant(state:MessagesState):
     return {"messages":[llm_with_tools.invoke([sys_msg] + state["messages"])]}
 
 builder=StateGraph(MessagesState)
@@ -69,7 +69,7 @@ builder.add_node('tools', ToolNode(tools))
 
 builder.add_edge(START, 'assistant')
 builder.add_conditional_edges(
-    'assistant'
+    'assistant',
     tools_condition
  )
 builder.add_edge('tools', 'assistant')
@@ -81,4 +81,7 @@ thread = {"configurable":{"thread_id":123}}
 initial_input={"messages":HumanMessage(content="Multiple 2 and 3")}
 
 for event in graph.stream(initial_input, thread, stream_mode="values"):
-    event['message'][-1].pretty_print()
+    event['messages'][-1].pretty_print()
+
+state = graph.get_state(thread)
+print(state.next)
