@@ -84,8 +84,17 @@ for event in graph.stream(initial_input, thread, stream_mode="values"):
     event['messages'][-1].pretty_print()
 
 state = graph.get_state(thread)
+
 print(state.next)
 print(graph.get_state_history(thread))
+
+graph.update_state(thread,{"messages":[HumanMessage(content="No, please multiple 15 and 6")]})
+
+new_state = graph.get_state(thread).values
+
+
+for m in new_state['messages']:
+    m.pretty_print()
 
 for event in graph.stream(None, thread, stream_mode="values"):
     event['messages'][-1].pretty_print()
