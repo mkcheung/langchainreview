@@ -22,7 +22,6 @@ console = Console()
 llm = ChatOpenAI(model="gpt-5.4-mini")
 
 result = llm.invoke('Hello')
-print(result)
 def multiply(a:int, b:int) -> int:
     """Multiply a and b.
 
@@ -59,6 +58,8 @@ llm_with_tools = llm.bind_tools(tools)
 
 sys_msg = SystemMessage(content="You are a helpful assistant tasked with performing arithmetic on a set of inputs.")
 
+def human_feedback(state:MessagesState):
+    pass
 def assistant(state:MessagesState):
     return {"messages":[llm_with_tools.invoke([sys_msg] + state["messages"])]}
 
@@ -66,35 +67,29 @@ builder=StateGraph(MessagesState)
 
 builder.add_node('assistant', assistant)
 builder.add_node('tools', ToolNode(tools))
+builder.add_node('human_feedback', human_feedback)
 
-builder.add_edge(START, 'assistant')
+builder.add_edge(START, 'human_feedback')
+builder.add_edge('human_feedback', 'assistant')
 builder.add_conditional_edges(
     'assistant',
     tools_condition
  )
-builder.add_edge('tools', 'assistant')
+builder.add_edge('tools', 'human_feedback')
 
 memory = MemorySaver()
 
-graph = builder.compile(interrupt_before=["assistant"], checkpointer = memory)
+graph = builder.compile(interrupt_before=["human_feedback"], checkpointer = memory)
 thread = {"configurable":{"thread_id":123}}
 initial_input={"messages":HumanMessage(content="Multiple 2 and 3")}
 
 for event in graph.stream(initial_input, thread, stream_mode="values"):
     event['messages'][-1].pretty_print()
 
-state = graph.get_state(thread)
-
-print(state.next)
-print(graph.get_state_history(thread))
-
-graph.update_state(thread,{"messages":[HumanMessage(content="No, please multiple 15 and 6")]})
-
-new_state = graph.get_state(thread).values
-
-
-for m in new_state['messages']:
-    m.pretty_print()
+user_input = input("Tell me how you want to update the state:")
+graph.update_state(thread, {"messages":user_input},as_node="human_feedback")
 
 for event in graph.stream(None, thread, stream_mode="values"):
     event['messages'][-1].pretty_print()
+
+
