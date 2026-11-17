@@ -85,3 +85,7 @@ for event in graph.stream(initial_input, thread, stream_mode="values"):
 
 state = graph.get_state(thread)
 print(state.next)
+print(graph.get_state_history(thread))
+
+for event in graph.stream(None, thread, stream_mode="values"):
+    event['messages'][-1].pretty_print()
